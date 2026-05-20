@@ -62,7 +62,7 @@ function App() {
 
     try {
       // שליחת הבקשה כאשר ה-UML מוזרק כ-Header מותאם אישית
-      const response = await axios.post('http://localhost:3001/api/generate-jira-tasks', formData, {
+      const response = await axios.post('https://ai-to-jira.onrender.com/api/generate-jira-tasks', formData, {
         responseType: 'blob', // קבלת קובץ בינארי
         headers: {
           // DO NOT set 'Content-Type': 'multipart/form-data' explicitly here,
