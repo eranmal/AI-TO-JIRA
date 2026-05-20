@@ -122,14 +122,13 @@ ${pdfText}
 `;
 
       const response = await ai.models.generateContent({
-        model: 'gemini-2.5-flash-8b',
+        model: 'gemini-2.5-flash',
         contents: promptContent,
         config: {
           systemInstruction: SYSTEM_PROMPT,
           temperature: 0.15,
         }
       });
-
       // חילוץ טקסט בטוח ומותאם ל-SDK החדש
       let responseText = '';
       if (response && response.text) {
