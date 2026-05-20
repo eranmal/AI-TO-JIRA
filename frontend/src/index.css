@@ -23,17 +23,17 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: 
-    radial-gradient(at 40% 20%, hsla(253,16%,7%,1) 0px, transparent 50%),
-    radial-gradient(at 80% 0%, hsla(245,63%,27%,1) 0px, transparent 50%),
-    radial-gradient(at 0% 50%, hsla(333,48%,27%,1) 0px, transparent 50%);
+  background-image:
+    radial-gradient(at 40% 20%, hsla(253, 16%, 7%, 1) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, hsla(245, 63%, 27%, 1) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, hsla(333, 48%, 27%, 1) 0px, transparent 50%);
   background-attachment: fixed;
 }
 
 .app-container {
   max-width: 800px;
   width: 90%;
-  padding: 3rem;
+  padding: 3rem 3rem 1.5rem 3rem;
   background: var(--card-bg);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
@@ -42,11 +42,23 @@ body {
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   text-align: center;
   animation: fadeIn 0.6s ease-out;
+
+
+  display: flex;
+  flex-direction: column;
+  min-height: auto;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 h1 {
@@ -76,7 +88,8 @@ p.subtitle {
   overflow: hidden;
 }
 
-.upload-zone:hover, .upload-zone.drag-active {
+.upload-zone:hover,
+.upload-zone.drag-active {
   border-color: var(--primary);
   background: rgba(99, 102, 241, 0.1);
   transform: scale(1.02);
@@ -117,8 +130,15 @@ input[type="file"] {
 }
 
 @keyframes slideIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .file-name {
@@ -156,6 +176,7 @@ input[type="file"] {
 .btn.success {
   background: var(--success);
 }
+
 .btn.success:hover {
   background: #059669;
 }
@@ -164,17 +185,19 @@ input[type="file"] {
 .spinner {
   width: 40px;
   height: 40px;
-  border: 4px solid rgba(255,255,255,0.1);
+  border: 4px solid rgba(255, 255, 255, 0.1);
   border-left-color: var(--primary);
   border-radius: 50%;
   animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-/* Error msg */
+
 .error-msg {
   color: var(--error);
   margin-top: 1rem;
@@ -182,4 +205,27 @@ input[type="file"] {
   padding: 0.75rem;
   background: rgba(239, 68, 68, 0.1);
   border-radius: 8px;
+}
+
+
+.app-footer {
+  margin-top: 3rem;
+  padding-top: 1.5rem;
+  text-align: center;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.35);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  width: 100%;
+}
+
+.app-footer a {
+  color: #a855f7;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease, text-shadow 0.2s ease;
+}
+
+.app-footer a:hover {
+  color: #3b82f6;
+  text-shadow: 0 0 10px rgba(59, 130, 246, 0.6);
 }

@@ -56,23 +56,17 @@ function App() {
     setError(null);
     setDownloadUrl(null);
 
-    // ה-FormData מכיל אך ורק את הקובץ הבינארי
     const formData = new FormData();
     formData.append('assignmentFile', file);
 
     try {
-      // שליחת הבקשה כאשר ה-UML מוזרק כ-Header מותאם אישית
       const response = await axios.post('https://ai-to-jira.onrender.com/api/generate-jira-tasks', formData, {
-        responseType: 'blob', // קבלת קובץ בינארי
+        responseType: 'blob',
         headers: {
-          // DO NOT set 'Content-Type': 'multipart/form-data' explicitly here,
-          // otherwise Axios won't append the required boundary and multer will fail.
-          // הזרקת ה-UML בצורה בטוחה בתוך ה-Header
           'x-uml-context': encodeURIComponent(umlText.trim())
         }
       });
 
-      // יצירת קישור להורדה
       const url = window.URL.createObjectURL(new Blob([response.data], { type: 'text/csv' }));
       setDownloadUrl(url);
 
@@ -188,6 +182,11 @@ function App() {
           </div>
         </div>
       )}
+
+      {/* */}
+      <footer className="app-footer">
+        Created with ❤️ by <a href="https://github.com/eranmal" target="_blank" rel="noopener noreferrer">@Eran Malachi</a> | Fully Driven by AI & Prompt Engineering
+      </footer>
     </div>
   );
 }
