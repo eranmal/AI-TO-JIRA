@@ -4,8 +4,11 @@ const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 const pdfParse = require('pdf-parse');
+const path = require('path'); // מודול מובנה לניהול נתיבים בטוח
 const { GoogleGenAI } = require('@google/genai');
-const { SYSTEM_PROMPT } = require('./prompt');
+
+// טעינת הפרומפט באמצעות נתיב אבסולוטי מוחלט כדי למנוע קריסות ב-Render
+const { SYSTEM_PROMPT } = require(path.join(__dirname, 'prompt.js'));
 
 const app = express();
 const port = 3001;
@@ -41,7 +44,7 @@ app.post('/api/generate-jira-tasks', upload.single('assignmentFile'), async (req
     console.log('UML received via Headers. Length:', umlText.length);
     console.log('Starting Issue ID requested:', startId);
 
-    // 2. חילוץ הטקסט האמיתי מה-PDF (כאן תיקנתי את קוד הדמי שהיה מקודם!)
+    // 2. חילוץ הטקסט האמיתי מה-PDF
     const dataBuffer = req.file.buffer;
     const data = await pdfParse(dataBuffer);
     const pdfText = data.text;
