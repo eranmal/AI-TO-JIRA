@@ -1,0 +1,71 @@
+# ==========================================
+# 1. NODE.JS & REACT (Frontend & Backend)
+# ==========================================
+# ספריות הקוד הכבדות שמותקנות אוטומטית - אסור שיעלו לגיט
+node_modules/
+jspm_packages/
+
+# קובצי הגדרות ומשתני סביבה חסויים (מפתחות API וכדומה) - קריטי ביותר!
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.env
+
+# תיקיות הקומפילציה והבילד הסופי של React/Vite
+dist/
+build/
+.cache/
+
+# קובצי לוג של שגיאות והרצה
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ==========================================
+# 2. C++ & COMPILATION (Exercise 2 Components)
+# ==========================================
+# קובצי הרצה וקומפילציה בינאריים של C++
+*.o
+*.obj
+*.out
+*.app
+*.exe
+
+# תיקיות הבנייה האוטומטיות של CMake
+build/
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# ==========================================
+# 3. PYTHON (Client Components)
+# ==========================================
+# קבצים זמניים של מנוע פייתון
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+ENV/
+
+# ==========================================
+# 4. SYSTEM & IDE (Editors configuration)
+# ==========================================
+# קובצי הגדרות פנימיים של סביבות הפיתוח וסייר הקבצים
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# קבצי מערכת הפעלה
+Thumbs.db
+.DS_Store
