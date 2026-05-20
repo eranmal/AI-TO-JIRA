@@ -18,7 +18,7 @@ const upload = multer({ storage });
 // אתחול קליינט ה-Gemini במידה וקיים מפתח
 const ai = process.env.GEMINI_API_KEY ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }) : null;
 
-// --- פרומפט המערכת המשולב (כולל TDD וכל החוקים הנוקשים) ---
+// --- פרומפט המערכת המשולב ---
 const SYSTEM_PROMPT = `
 You are an expert Agile Project Manager, Solutions Architect, and Scrum Master. Your task is to analyze two input sources: an existing system's UML structure and a new programming assignment specification PDF. You must generate a clean, production-ready Jira migration CSV file that maps out the exact technical transition from the old architecture to the new architecture.
 
@@ -98,7 +98,7 @@ app.post('/api/generate-jira-tasks', upload.single('assignmentFile'), async (req
     const data = await pdfParse(dataBuffer);
     const pdfText = data.text;
 
-    let csvData;
+    let csvData = '';
 
     if (ai) {
       console.log('Invoking Gemini Pro Refactoring Engine...');
@@ -124,14 +124,26 @@ ${pdfText}
         }
       });
 
-      let responseText = (typeof response.text === 'function') ? response.text() : response.text;
+      // חילוץ טקסט בטוח ומותאם ל-SDK החדש
+      let responseText = '';
+      if (response && response.text) {
+        responseText = (typeof response.text === 'function') ? response.text() : response.text;
+      } else if (response && response.candidates && response.candidates[0]?.content?.parts[0]?.text) {
+        responseText = response.candidates[0].content.parts[0].text;
+      }
 
-      responseText = responseText
-        .replace(/```csv\n?/gi, '')
-        .replace(/```\n?/g, '')
-        .trim();
+      // הגנה קריטית: ניקוי רק אם קיבלנו מחרוזת תקינה
+      if (responseText) {
+        responseText = responseText
+          .replace(/```csv\n?/gi, '')
+          .replace(/```\n?/g, '')
+          .trim();
+        csvData = responseText;
+      } else {
+        console.log('WARNING: Gemini returned empty or unexpected structure.');
+        csvData = `Issue ID,Parent ID,Summary,Issue Type,Description\n${startId},,"Error: Failed to fetch structured content from AI.","Task","Check logs."`;
+      }
 
-      csvData = responseText;
       console.log('Jira CSV compilation completed successfully.');
     } else {
       return res.status(500).json({ error: 'Gemini Client missing.' });
