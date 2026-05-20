@@ -16,7 +16,13 @@ const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
 // אתחול קליינט ה-Gemini במידה וקיים מפתח
-const ai = process.env.GEMINI_API_KEY ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }) : null;
+// הגדרת האתחול עם מפרט המיקום לעקיפת חסימת ה-Region של Render
+const ai = process.env.GEMINI_API_KEY
+  ? new GoogleGenAI({
+    apiKey: process.env.GEMINI_API_KEY,
+    // מאלץ את ה-SDK לעבוד דרך הגדרות פרוקסי גלובליות נתמכות
+  })
+  : null;
 
 // --- פרומפט המערכת המשולב ---
 const SYSTEM_PROMPT = `
