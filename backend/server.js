@@ -1,11 +1,11 @@
-require('dotenv').config(); // <-- 1. הוספה קריטית בשורה הראשונה של הקובץ!
+require('dotenv').config();
 
 const express = require('express');
 const cors = require('cors');
 const multer = require('multer');
 const pdfParse = require('pdf-parse');
 const { GoogleGenAI } = require('@google/genai');
-const { SYSTEM_PROMPT, getMockCsvData } = require('./prompt');
+const { SYSTEM_PROMPT } = require('./prompt');
 
 const app = express();
 const port = 3001;
@@ -13,10 +13,11 @@ const port = 3001;
 app.use(cors());
 app.use(express.json());
 
+// הגדרת ה-Multer פעם אחת בלבד בראש הקובץ
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-// Initialize Gemini API client if API key is present
+// אתחול קליינט ה-Gemini במידה וקיים מפתח
 const ai = process.env.GEMINI_API_KEY ? new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY }) : null;
 
 app.post('/api/generate-jira-tasks', upload.single('assignmentFile'), async (req, res) => {
@@ -29,19 +30,18 @@ app.post('/api/generate-jira-tasks', upload.single('assignmentFile'), async (req
       return res.status(400).json({ error: 'Uploaded file must be a PDF' });
     }
 
-    // 1. קריאת ופענוח ה-UML מה-Headers (עובד מיידית ובטוח לחלוטין!)
+    // 1. קריאת ופענוח ה-UML מה-Headers
     const rawUml = req.headers['x-uml-context'] || '';
     const umlText = rawUml ? decodeURIComponent(rawUml).trim() : '';
 
+    // קריאת ה-ID הראשוני שנשלח מה-Frontend
     const startId = parseInt(req.headers['x-start-id'], 10) || 1;
 
     console.log('=== NETWORK PIPELINE SUCCESS ===');
     console.log('UML received via Headers. Length:', umlText.length);
-    if (umlText) {
-      console.log('UML Preview:', umlText.substring(0, 100).replace(/\n/g, ' '));
-    }
+    console.log('Starting Issue ID requested:', startId);
 
-    // 2. חילוץ הטקסט מה-PDF
+    // 2. חילוץ הטקסט האמיתי מה-PDF (כאן תיקנתי את קוד הדמי שהיה מקודם!)
     const dataBuffer = req.file.buffer;
     const data = await pdfParse(dataBuffer);
     const pdfText = data.text;
@@ -51,8 +51,9 @@ app.post('/api/generate-jira-tasks', upload.single('assignmentFile'), async (req
     let csvData;
 
     if (ai) {
-      console.log('Invoking Gemini Pro Refactoring Engine...');
+      console.log('Invoking Gemini Pro Refactoring Engine with dynamic IDs and TDD constraints...');
 
+      // בניית הפרומפט המשולב עם הטקסטים והנחיית ה-ID הדינמית
       const promptContent = `
 [EXISTING UML STRUCTURE / TEXT]:
 ${umlText || 'No previous architecture provided.'}
@@ -76,20 +77,20 @@ ${pdfText}
 
       let responseText = (typeof response.text === 'function') ? response.text() : response.text;
 
-      // ניקוי תגיות מרקדאון
+      // ניקוי תגיות מרקדאון של ה-CSV במידה וה-AI החזיר אותן
       responseText = responseText
         .replace(/```csv\n?/gi, '')
         .replace(/```\n?/g, '')
         .trim();
 
       csvData = responseText;
-      console.log('Jira CSV compilation completed by AI.');
+      console.log('Jira CSV compilation completed successfully.');
     } else {
       console.log('CRITICAL: AI instance is null.');
       return res.status(500).json({ error: 'Gemini Client missing.' });
     }
 
-    // שליחת הקובץ
+    // שליחת הקובץ חזרה לדפדפן
     res.setHeader('Content-Type', 'text/csv');
     res.setHeader('Content-Disposition', 'attachment; filename="Jira_Tasks.csv"');
     res.send(csvData);
@@ -101,10 +102,10 @@ ${pdfText}
 });
 
 app.listen(port, () => {
-  console.log(`Backend server running on http://localhost:${port}`);
+  console.log(`Backend server running on port ${port}`);
   if (!ai) {
-    console.log('WARNING: GEMINI_API_KEY not set in .env file. Will use mock response data.');
+    console.log('WARNING: GEMINI_API_KEY not set. Will use mock response data.');
   } else {
-    console.log('SUCCESS: Gemini API Client initialized correctly from .env!');
+    console.log('SUCCESS: Gemini API Client initialized correctly!');
   }
 });
