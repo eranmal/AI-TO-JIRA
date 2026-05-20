@@ -95,6 +95,12 @@ p.subtitle {
   transform: scale(1.02);
 }
 
+textarea:focus, input[type="number"]:focus {
+  outline: none;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
 .upload-icon {
   font-size: 3rem;
   margin-bottom: 1rem;

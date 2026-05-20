@@ -5,6 +5,7 @@ import './index.css';
 function App() {
   const [file, setFile] = useState(null);
   const [umlText, setUmlText] = useState('');
+  const [startId, setStartId] = useState(1);
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
@@ -63,7 +64,8 @@ function App() {
       const response = await axios.post('https://ai-to-jira.onrender.com/api/generate-jira-tasks', formData, {
         responseType: 'blob',
         headers: {
-          'x-uml-context': encodeURIComponent(umlText.trim())
+          'x-uml-context': encodeURIComponent(umlText.trim()),
+          'x-start-id': startId
         }
       });
 
@@ -107,6 +109,26 @@ function App() {
 
       <div style={{ width: '100%', marginTop: '1rem', textAlign: 'left' }}>
         <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>
+          Starting Issue ID:
+        </label>
+        <input 
+          type="number"
+          min="1"
+          value={startId}
+          onChange={(e) => setStartId(e.target.value)}
+          style={{
+            width: '100%',
+            padding: '0.75rem',
+            borderRadius: '8px',
+            background: 'rgba(0,0,0,0.2)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            color: 'var(--text)',
+            fontFamily: 'monospace',
+            marginBottom: '1rem'
+          }}
+        />
+
+        <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>
           Existing UML Structure (Optional Mermaid/Text):
         </label>
         <textarea
@@ -136,7 +158,7 @@ function App() {
           {isProcessing ? (
             <>
               <div className="spinner"></div>
-              <p>Analyzing assignment and generating tasks...</p>
+              <p>Analyzing assignment and generating tasks starting from ID {startId}...</p>
             </>
           ) : (
             <div style={{ display: 'flex', gap: '1rem' }}>
@@ -159,7 +181,7 @@ function App() {
         <div className="file-info">
           <div className="upload-icon">✅</div>
           <div className="upload-text">Success! Your CSV is ready.</div>
-          <p className="upload-subtext">You can now import this file directly into Jira.</p>
+          <p className="upload-subtext">You can now import this file directly into Jira. IDs start from {startId}.</p>
           <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
             <a
               href={downloadUrl}

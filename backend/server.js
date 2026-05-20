@@ -33,6 +33,8 @@ app.post('/api/generate-jira-tasks', upload.single('assignmentFile'), async (req
     const rawUml = req.headers['x-uml-context'] || '';
     const umlText = rawUml ? decodeURIComponent(rawUml).trim() : '';
 
+    const startId = parseInt(req.headers['x-start-id'], 10) || 1;
+
     console.log('=== NETWORK PIPELINE SUCCESS ===');
     console.log('UML received via Headers. Length:', umlText.length);
     if (umlText) {
@@ -57,6 +59,10 @@ ${umlText || 'No previous architecture provided.'}
 
 [NEW ASSIGNMENT SPECIFICATION PDF TEXT]:
 ${pdfText}
+
+### CRITICAL HIERARCHY ID CONSTRAINT:
+- For this specific execution, the sequential 'Issue ID' counter MUST strictly start from the integer ${startId} and increment sequentially by 1 for every subsequent row (e.g., ${startId}, ${startId + 1}, ${startId + 2}, ...).
+- Ensure that all 'Parent ID' fields for Stories and Sub-tasks correctly reference these new shifted sequential IDs. Do NOT start from 1.
 `;
 
       const response = await ai.models.generateContent({
