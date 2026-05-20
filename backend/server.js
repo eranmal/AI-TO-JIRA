@@ -5,7 +5,8 @@ const cors = require('cors');
 const multer = require('multer');
 const pdfParse = require('pdf-parse');
 const { GoogleGenAI } = require('@google/genai');
-const { SYSTEM_PROMPT } = require('./prompt');
+const path = require('path');
+const { SYSTEM_PROMPT, getMockCsvData } = require(path.join(__dirname, 'prompt.js'));
 
 const app = express();
 const port = 3001;

@@ -54,7 +54,7 @@ An Integration/E2E Sub-task row (Validating the complete flow):
 
 ### CSV OUTPUT FORMAT
 Use only these exact headers:
-Issue ID,Parent ID,Summary,Issue Type,Description
+Issue ID,Parent ID,Summary,Issue Type,Description 
 `;
 
 const getMockCsvData = () => {
