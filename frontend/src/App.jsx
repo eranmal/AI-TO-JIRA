@@ -6,6 +6,8 @@ function App() {
   const [file, setFile] = useState(null);
   const [umlText, setUmlText] = useState('');
   const [startId, setStartId] = useState(1);
+  const [apiKey, setApiKey] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
@@ -53,6 +55,11 @@ function App() {
   const handleGenerateTasks = async () => {
     if (!file) return;
 
+    if (!apiKey.trim()) {
+      setError('Please provide a Gemini API key.');
+      return;
+    }
+
     setIsProcessing(true);
     setError(null);
     setDownloadUrl(null);
@@ -65,7 +72,8 @@ function App() {
         responseType: 'blob',
         headers: {
           'x-uml-context': encodeURIComponent(umlText.trim()),
-          'x-start-id': startId
+          'x-start-id': startId,
+          'x-api-key': apiKey.trim()
         }
       });
 
@@ -108,6 +116,46 @@ function App() {
       {error && <div className="error-msg">{error}</div>}
 
       <div style={{ width: '100%', marginTop: '1rem', textAlign: 'left' }}>
+        <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>
+          Gemini API Key:
+        </label>
+        <input 
+          type="password"
+          value={apiKey}
+          onChange={(e) => setApiKey(e.target.value)}
+          placeholder="Enter your Gemini API key"
+          style={{
+            width: '100%',
+            padding: '0.75rem',
+            borderRadius: '8px',
+            background: 'rgba(0,0,0,0.2)',
+            border: '1px solid rgba(255,255,255,0.2)',
+            color: 'var(--text)',
+            fontFamily: 'monospace',
+            marginBottom: '0.5rem'
+          }}
+        />
+        <div style={{ marginBottom: '1rem', fontSize: '0.85rem' }}>
+          <button 
+            type="button"
+            onClick={() => setIsModalOpen(true)}
+            style={{ 
+              background: 'none', 
+              border: 'none', 
+              color: 'var(--primary)', 
+              textDecoration: 'underline', 
+              cursor: 'pointer', 
+              padding: 0,
+              font: 'inherit'
+            }}
+          >
+            Don't know how to get it?
+          </button>
+          <p style={{ marginTop: '0.5rem', color: 'var(--text-muted)' }}>
+            The key you put is local on your computer only and the info doesn't pass forward. Don't believe me? You don't need to, just get in to <a href="https://github.com/eranmal/ai-to-jira" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)' }}>my GitHub</a> and see the code yourself :)
+          </p>
+        </div>
+
         <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>
           Starting Issue ID:
         </label>
@@ -201,6 +249,22 @@ function App() {
             >
               Upload Another
             </button>
+          </div>
+        </div>
+      )}
+
+      {isModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <button className="close-btn" onClick={() => setIsModalOpen(false)}>X</button>
+            <h2>How to get a Gemini API Key?</h2>
+            <ol style={{ textAlign: 'left', marginTop: '1rem', paddingLeft: '1.5rem', lineHeight: '1.6' }}>
+              <li>Go to <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--primary)' }}>Google AI Studio</a>.</li>
+              <li>Sign in with your Google account.</li>
+              <li>Click "Create API key".</li>
+              <li>Select a new project or an existing one.</li>
+              <li>Copy the generated key and paste it here.</li>
+            </ol>
           </div>
         </div>
       )}

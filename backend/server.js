@@ -15,15 +15,6 @@ app.use(express.json());
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-// אתחול קליינט ה-Gemini במידה וקיים מפתח
-// הגדרת האתחול עם מפרט המיקום לעקיפת חסימת ה-Region של Render
-const ai = process.env.GEMINI_API_KEY
-  ? new GoogleGenAI({
-    apiKey: process.env.GEMINI_API_KEY,
-    // מאלץ את ה-SDK לעבוד דרך הגדרות פרוקסי גלובליות נתמכות
-  })
-  : null;
-
 // --- פרומפט המערכת המשולב ---
 const SYSTEM_PROMPT = `
 You are an expert Agile Project Manager, Solutions Architect, and Scrum Master. Your task is to analyze two input sources: an existing system's UML structure and a new programming assignment specification PDF. You must generate a clean, production-ready Jira migration CSV file that maps out the exact technical transition from the old architecture to the new architecture.
@@ -99,6 +90,13 @@ app.post('/api/generate-jira-tasks', upload.single('assignmentFile'), async (req
     const rawUml = req.headers['x-uml-context'] || '';
     const umlText = rawUml ? decodeURIComponent(rawUml).trim() : '';
     const startId = parseInt(req.headers['x-start-id'], 10) || 1;
+    const apiKey = req.headers['x-api-key'];
+
+    if (!apiKey) {
+      return res.status(401).json({ error: 'API key is required' });
+    }
+
+    const ai = new GoogleGenAI({ apiKey });
 
     console.log('=== NETWORK PIPELINE SUCCESS ===');
     console.log('UML Length:', umlText.length);
