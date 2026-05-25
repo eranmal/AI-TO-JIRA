@@ -58,15 +58,7 @@ cd frontend
 npm install
 ```
 
-### 3. Setup Environment Variables
-
-In the `backend` folder, create a file named `.env` and add your Gemini API key:
-
-```env
-GEMINI_API_KEY=your_actual_api_key_here
-```
-
-### 4. Start the Application
+### 3. Start the Application
 
 You need to run both the frontend and backend servers simultaneously.
 
@@ -99,12 +91,20 @@ If you are running the project **locally**, ensure your `App.jsx` points to `htt
 
 ## 📖 How to Use the App
 
-1. **Open the App:** Navigate to the frontend URL (or `localhost:5173`).
-2. **Upload a File:** Drag and drop your project specification PDF into the upload zone.
-3. **Provide Context (Optional):** Once the file is uploaded, a text box will appear. Paste your existing system's UML, Mermaid chart, or old architectural notes here.
-4. **Generate:** Click **Generate Jira CSV**. The AI will take about 10-20 seconds to process the documents.
-5. **Download:** Click the green **Download CSV** button.
-6. **Import to Jira:** 
+1. **Get a Gemini API Key:** You will need a Google Gemini API key to use the app. 
+   - Go to [Google AI Studio](https://aistudio.google.com/app/apikey).
+   - Sign in with your Google account.
+   - Click "Create API key".
+   - Select a new project or an existing one.
+   - Copy the generated key.
+   - **Privacy Note:** The key you put is local on your computer only and the info doesn't pass forward. Don't believe me? You don't need to, just get in to [my GitHub](https://github.com/eranmal/ai-to-jira) and see the code yourself :)
+2. **Open the App:** Navigate to the frontend URL (or `localhost:5173`).
+3. **Upload a File:** Drag and drop your project specification PDF into the upload zone.
+4. **Enter API Key:** Once the file is uploaded, an input field for the Gemini API Key will appear. Paste your key there.
+5. **Provide Context (Optional):** You can also paste your existing system's UML, Mermaid chart, or old architectural notes in the text box.
+6. **Generate:** Click **Generate Jira CSV**. The AI will take about 10-20 seconds to process the documents.
+7. **Download:** Click the green **Download CSV** button.
+8. **Import to Jira:** 
    - Open your Jira project.
    - Go to `Issues` -> `Import issues from CSV`.
    - Upload your downloaded file and follow the Jira mapping wizard (map `Issue ID`, `Parent ID`, `Summary`, `Issue Type`, and `Description`).
