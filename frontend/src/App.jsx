@@ -4,10 +4,14 @@ import './index.css';
 
 function App() {
   const [file, setFile] = useState(null);
-  const [umlText, setUmlText] = useState('');
+  const [contextText, setContextText] = useState('');
   const [startId, setStartId] = useState(1);
   const [apiKey, setApiKey] = useState('');
+  const [sprintType, setSprintType] = useState('TDD');
+  const [infoType, setInfoType] = useState('UML');
+  const [isInfoExpanded, setIsInfoExpanded] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isHelperModalOpen, setIsHelperModalOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
@@ -71,9 +75,10 @@ function App() {
       const response = await axios.post('https://ai-to-jira.onrender.com/api/generate-jira-tasks', formData, {
         responseType: 'blob',
         headers: {
-          'x-uml-context': encodeURIComponent(umlText.trim()),
+          'x-uml-context': encodeURIComponent(contextText.trim()),
           'x-start-id': startId,
-          'x-api-key': apiKey.trim()
+          'x-api-key': apiKey.trim(),
+          'x-sprint-type': sprintType
         }
       });
 
@@ -176,25 +181,65 @@ function App() {
           }}
         />
 
-        <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>
-          Existing UML Structure (Optional Mermaid/Text):
-        </label>
-        <textarea
-          value={umlText}
-          onChange={(e) => setUmlText(e.target.value)}
-          placeholder="Paste existing architecture text or Mermaid UML here..."
-          style={{
-            width: '100%',
-            height: '120px',
-            padding: '1rem',
-            borderRadius: '8px',
-            background: 'rgba(0,0,0,0.2)',
-            border: '1px solid rgba(255,255,255,0.2)',
-            color: 'var(--text)',
-            fontFamily: 'monospace',
-            resize: 'vertical'
-          }}
-        />
+        <div style={{ marginBottom: '1rem', border: '1px solid rgba(255,255,255,0.2)', borderRadius: '8px', padding: '1rem', background: 'rgba(0,0,0,0.1)' }}>
+          <div 
+            style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', cursor: 'pointer' }}
+            onClick={() => setIsInfoExpanded(!isInfoExpanded)}
+          >
+            <h3 style={{ margin: 0, fontSize: '1.1rem', color: 'var(--primary)' }}>
+              Add Information {isInfoExpanded ? '▲' : '▼'}
+            </h3>
+          </div>
+          
+          {isInfoExpanded && (
+            <div style={{ marginTop: '1rem' }}>
+              <div style={{ display: 'flex', gap: '1rem', marginBottom: '1rem', alignItems: 'center' }}>
+                <button 
+                  className={`btn ${infoType === 'UML' ? 'primary' : ''}`}
+                  style={{ background: infoType === 'UML' ? 'var(--primary)' : 'transparent', border: '1px solid var(--primary)', padding: '0.5rem 1rem' }}
+                  onClick={() => setInfoType('UML')}
+                >
+                  UML Insert
+                </button>
+                <button 
+                  className={`btn ${infoType === 'PROJECT_STRUCTURE' ? 'primary' : ''}`}
+                  style={{ background: infoType === 'PROJECT_STRUCTURE' ? 'var(--primary)' : 'transparent', border: '1px solid var(--primary)', padding: '0.5rem 1rem' }}
+                  onClick={() => setInfoType('PROJECT_STRUCTURE')}
+                >
+                  Project Structure
+                </button>
+                <button 
+                  className="btn"
+                  style={{ background: 'var(--text-muted)', color: '#fff', borderRadius: '50%', width: '32px', height: '32px', padding: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', fontWeight: 'bold' }}
+                  onClick={() => setIsHelperModalOpen(true)}
+                  title="How to achieve the ideal structure?"
+                >
+                  ?
+                </button>
+              </div>
+
+              <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>
+                {infoType === 'UML' ? 'Existing UML Structure (Mermaid/Text):' : 'Current Project Directory Structure:'}
+              </label>
+              <textarea
+                value={contextText}
+                onChange={(e) => setContextText(e.target.value)}
+                placeholder={infoType === 'UML' ? "Paste existing architecture text or Mermaid UML here..." : "Paste project structure here (e.g. root/ -> server/ -> client/)..."}
+                style={{
+                  width: '100%',
+                  height: '120px',
+                  padding: '1rem',
+                  borderRadius: '8px',
+                  background: 'rgba(0,0,0,0.2)',
+                  border: '1px solid rgba(255,255,255,0.2)',
+                  color: 'var(--text)',
+                  fontFamily: 'monospace',
+                  resize: 'vertical'
+                }}
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       {file && !downloadUrl && (
@@ -209,17 +254,42 @@ function App() {
               <p>Analyzing assignment and generating tasks starting from ID {startId}...</p>
             </>
           ) : (
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <button className="btn" onClick={handleGenerateTasks}>
-                Generate Jira CSV
-              </button>
-              <button
-                className="btn"
-                style={{ background: 'transparent', border: '1px solid var(--primary)' }}
-                onClick={() => setFile(null)}
-              >
-                Cancel
-              </button>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              <div style={{ display: 'flex', gap: '1rem', alignItems: 'center', background: 'rgba(0,0,0,0.2)', padding: '0.75rem', borderRadius: '8px', border: '1px solid rgba(255,255,255,0.1)' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Sprint Type:</span>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                  <input 
+                    type="radio" 
+                    name="sprintType" 
+                    value="TDD" 
+                    checked={sprintType === 'TDD'} 
+                    onChange={() => setSprintType('TDD')}
+                  />
+                  TDD
+                </label>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', cursor: 'pointer' }}>
+                  <input 
+                    type="radio" 
+                    name="sprintType" 
+                    value="Regular" 
+                    checked={sprintType === 'Regular'} 
+                    onChange={() => setSprintType('Regular')}
+                  />
+                  Regular
+                </label>
+              </div>
+              <div style={{ display: 'flex', gap: '1rem' }}>
+                <button className="btn" onClick={handleGenerateTasks}>
+                  Generate Jira CSV
+                </button>
+                <button
+                  className="btn"
+                  style={{ background: 'transparent', border: '1px solid var(--primary)' }}
+                  onClick={() => setFile(null)}
+                >
+                  Cancel
+                </button>
+              </div>
             </div>
           )}
         </div>
@@ -265,6 +335,39 @@ function App() {
               <li>Select a new project or an existing one.</li>
               <li>Copy the generated key and paste it here.</li>
             </ol>
+          </div>
+        </div>
+      )}
+
+      {isHelperModalOpen && (
+        <div className="modal-overlay">
+          <div className="modal-content" style={{ maxWidth: '600px' }}>
+            <button className="close-btn" onClick={() => setIsHelperModalOpen(false)}>X</button>
+            <h2>How to achieve the ideal {infoType === 'UML' ? 'UML' : 'Project Structure'}</h2>
+            <div style={{ textAlign: 'left', marginTop: '1rem', lineHeight: '1.6' }}>
+              <p>Follow these steps to generate the best context for the AI:</p>
+              <ol style={{ paddingLeft: '1.5rem' }}>
+                <li>Open the root of your project in your IDE (e.g., VS Code, IntelliJ).</li>
+                <li>Open your AI agent extension (e.g., GitHub Copilot, Gemini Code Assist, Cursor) in the IDE.</li>
+                <li>Copy and paste the following prompt to the agent:
+                  <div style={{ 
+                    background: 'rgba(0,0,0,0.3)', 
+                    padding: '1rem', 
+                    borderRadius: '8px', 
+                    marginTop: '0.5rem', 
+                    marginBottom: '0.5rem',
+                    fontFamily: 'monospace',
+                    fontSize: '0.9rem',
+                    border: '1px solid rgba(255,255,255,0.1)'
+                  }}>
+                    {infoType === 'UML' 
+                      ? "Please generate a Mermaid UML diagram representing the core architecture and component relationships of this project. Only output the text." 
+                      : "Please provide a detailed directory and file structure tree of the current project root, focusing on the main application directories (e.g., frontend, backend, src). Only output the text."}
+                  </div>
+                </li>
+                <li>Copy the agent's answer and paste it into the text area.</li>
+              </ol>
+            </div>
           </div>
         </div>
       )}
