@@ -106,8 +106,8 @@ const getMockCsvData = () => {
     const data = fs.readFileSync('D:\\\\year2\\\\sem_b\\\\advanced programming\\\\Jira_Ex2_English_Final.csv', 'utf-8');
     return data;
   } catch (e) {
-    return \`Issue ID,Parent ID,Summary,Issue Type,Description
-1,,"Epic 1: Environment Migration & Administrative Setup",Epic,"Initial project setup scaffolding"\`;
+    return `Issue ID,Parent ID,Summary,Issue Type,Description
+1,,"Epic 1: Environment Migration & Administrative Setup",Epic,"Initial project setup scaffolding"`;
   }
 };
 
